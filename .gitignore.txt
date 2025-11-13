@@ -1,0 +1,14 @@
+# Node modules (dependencies installed via npm)
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables (API keys, DB passwords)
+.env
+
+# Build output
+dist/
+build/
