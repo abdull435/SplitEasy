@@ -28,6 +28,11 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
     setSelectedParticipants(newParticipants);
   };
 
+  const shareWithAll = () => {
+    const allPersonIds = new Set(people.map(p => p.id));
+    setSelectedParticipants(allPersonIds);
+  };
+
   const getPersonName = (personId) => {
     const person = people.find(p => p.id === personId);
     return person ? person.name : 'Unknown';
@@ -76,7 +81,17 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Who's sharing this item?</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">Who's sharing this item?</label>
+            <button
+              type="button"
+              onClick={shareWithAll}
+              disabled={people.length === 0}
+              className="text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
+            >
+              Share with all
+            </button>
+          </div>
           <div className="space-y-2 bg-gray-50 p-3 rounded-lg">
             {people.length === 0 ? (
               <p className="text-gray-500 text-sm">Add people first</p>
