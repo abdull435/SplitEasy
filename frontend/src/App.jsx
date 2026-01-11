@@ -23,12 +23,13 @@ function App() {
     setItems((prev) => prev.filter((item) => item.personId !== id));
   };
 
-  const addItem = (name, price, personId) => {
+  const addItem = (name, price, personId, participants) => {
     const newItem = {
       id: Date.now().toString(),
       name,
       price,
       personId,
+      participants,
     };
     setItems((prev) => [...prev, newItem]);
   };

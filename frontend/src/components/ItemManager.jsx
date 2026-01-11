@@ -5,14 +5,27 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
   const [itemName, setItemName] = useState('');
   const [price, setPrice] = useState('');
   const [selectedPersonId, setSelectedPersonId] = useState('');
+  const [selectedParticipants, setSelectedParticipants] = useState(new Set());
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (itemName.trim() && price && selectedPersonId) {
-      onAddItem(itemName.trim(), parseFloat(price), selectedPersonId);
+    if (itemName.trim() && price && selectedPersonId && selectedParticipants.size > 0) {
+      onAddItem(itemName.trim(), parseFloat(price), selectedPersonId, Array.from(selectedParticipants));
       setItemName('');
       setPrice('');
+      setSelectedPersonId('');
+      setSelectedParticipants(new Set());
     }
+  };
+
+  const toggleParticipant = (personId) => {
+    const newParticipants = new Set(selectedParticipants);
+    if (newParticipants.has(personId)) {
+      newParticipants.delete(personId);
+    } else {
+      newParticipants.add(personId);
+    }
+    setSelectedParticipants(newParticipants);
   };
 
   const getPersonName = (personId) => {
@@ -45,23 +58,47 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
-        <select
-          value={selectedPersonId}
-          onChange={(e) => setSelectedPersonId(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          disabled={people.length === 0}
-        >
-          <option value="">Select who bought this</option>
-          {people.map((person) => (
-            <option key={person.id} value={person.id}>
-              {person.name}
-            </option>
-          ))}
-        </select>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Who bought this?</label>
+          <select
+            value={selectedPersonId}
+            onChange={(e) => setSelectedPersonId(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled={people.length === 0}
+          >
+            <option value="">Select who bought this</option>
+            {people.map((person) => (
+              <option key={person.id} value={person.id}>
+                {person.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Who's sharing this item?</label>
+          <div className="space-y-2 bg-gray-50 p-3 rounded-lg">
+            {people.length === 0 ? (
+              <p className="text-gray-500 text-sm">Add people first</p>
+            ) : (
+              people.map((person) => (
+                <label key={person.id} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedParticipants.has(person.id)}
+                    onChange={() => toggleParticipant(person.id)}
+                    className="w-4 h-4 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <span className="text-gray-700">{person.name}</span>
+                </label>
+              ))
+            )}
+          </div>
+        </div>
 
         <button
           type="submit"
-          disabled={people.length === 0}
+          disabled={people.length === 0 || !selectedPersonId || selectedParticipants.size === 0}
           className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           <Plus className="w-5 h-5" />
@@ -85,6 +122,11 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
                 <div className="text-sm text-gray-500">
                   Bought by: {getPersonName(item.personId)}
                 </div>
+                {item.participants && item.participants.length > 0 && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    Shared by: {item.participants.map(id => getPersonName(id)).join(', ')}
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-indigo-600 font-semibold">

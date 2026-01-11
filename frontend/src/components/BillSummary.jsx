@@ -9,17 +9,33 @@ export function BillSummary({ people, items }) {
 
   const summary = useMemo(() => {
     const total = items.reduce((sum, item) => sum + item.price, 0);
-    const perPersonShare = people.length > 0 ? total / people.length : 0;
 
+    // Calculate what each person should pay based on items they participate in
     const personSummary = people.map((person) => {
       const personItems = items.filter((item) => item.personId === person.id);
       const totalSpent = personItems.reduce((sum, item) => sum + item.price, 0);
-      const balance = totalSpent - perPersonShare;
+
+      // Calculate how much this person should pay
+      let totalOwes = 0;
+      items.forEach((item) => {
+        if (item.participants && item.participants.length > 0) {
+          // Item has specific participants
+          if (item.participants.includes(person.id)) {
+            totalOwes += item.price / item.participants.length;
+          }
+        } else {
+          // Fallback: if no participants specified, split equally among all people
+          totalOwes += item.price / people.length;
+        }
+      });
+
+      const balance = totalSpent - totalOwes;
 
       return {
         person,
         items: personItems,
         totalSpent,
+        totalOwes,
         balance,
       };
     });
@@ -52,7 +68,6 @@ export function BillSummary({ people, items }) {
 
     return {
       total,
-      perPersonShare,
       personSummary,
       transfers,
     };
@@ -118,28 +133,21 @@ export function BillSummary({ people, items }) {
       </div>
 
       <div ref={shareableRef} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-indigo-50 rounded-lg p-4">
-            <div className="text-sm text-indigo-600 mb-1">Total Bill</div>
-            <div className="text-3xl font-bold text-indigo-700">
-              Rs {summary.total.toFixed(2)}
-            </div>
-          </div>
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="text-sm text-blue-600 mb-1">Per Person</div>
-            <div className="text-3xl font-bold text-blue-700">
-              Rs {summary.perPersonShare.toFixed(2)}
-            </div>
+        <div className="bg-indigo-50 rounded-lg p-4">
+          <div className="text-sm text-indigo-600 mb-1">Total Bill</div>
+          <div className="text-3xl font-bold text-indigo-700">
+            Rs {summary.total.toFixed(2)}
           </div>
         </div>
 
         <div className="space-y-4">
-          {summary.personSummary.map(({ person, items: personItems, totalSpent, balance }) => (
+          {summary.personSummary.map(({ person, items: personItems, totalSpent, totalOwes, balance }) => (
             <div key={person.id} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{person.name}</h3>
                   <div className="text-sm text-gray-500">Spent: Rs {totalSpent.toFixed(2)}</div>
+                  <div className="text-sm text-gray-500">Should pay: Rs {totalOwes.toFixed(2)}</div>
                 </div>
                 <div className="text-right">
                   {balance > 0.01 ? (
