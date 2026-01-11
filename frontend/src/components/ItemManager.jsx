@@ -88,7 +88,7 @@ export function ItemManager({ people, items, onAddItem, onRemoveItem }) {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-indigo-600 font-semibold">
-                  ${item.price.toFixed(2)}
+                  Rs {item.price.toFixed(2)}
                 </span>
                 <button
                   onClick={() => onRemoveItem(item.id)}

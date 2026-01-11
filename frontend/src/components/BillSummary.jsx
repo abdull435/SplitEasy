@@ -42,15 +42,15 @@ export function BillSummary({ people, items }) {
         <div className="bg-indigo-50 rounded-lg p-4">
           <div className="text-sm text-indigo-600 mb-1">Total Bill</div>
           <div className="text-3xl font-bold text-indigo-700">
-            ${summary.total.toFixed(2)}
+            Rs {summary.total.toFixed(2)}
           </div>
         </div>
         <div className="bg-blue-50 rounded-lg p-4">
           <div className="text-sm text-blue-600 mb-1">Per Person</div>
           <div className="text-3xl font-bold text-blue-700">
-            ${summary.perPersonShare.toFixed(2)}
+            Rs {summary.perPersonShare.toFixed(2)}
           </div>
-        </div>
+        </div> 
       </div>
 
       <div className="space-y-4">
@@ -60,19 +60,19 @@ export function BillSummary({ people, items }) {
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">{person.name}</h3>
                 <div className="text-sm text-gray-500">
-                  Spent: ${totalSpent.toFixed(2)}
+                  Spent: Rs {totalSpent.toFixed(2)}
                 </div>
               </div>
               <div className="text-right">
                 {balance > 0.01 ? (
                   <div className="flex items-center gap-1 text-green-600">
                     <TrendingUp className="w-5 h-5" />
-                    <span className="font-semibold">+${balance.toFixed(2)}</span>
+                    <span className="font-semibold">+Rs {balance.toFixed(2)}</span>
                   </div>
                 ) : balance < -0.01 ? (
                   <div className="flex items-center gap-1 text-red-600">
                     <TrendingDown className="w-5 h-5" />
-                    <span className="font-semibold">${balance.toFixed(2)}</span>
+                    <span className="font-semibold">Rs {balance.toFixed(2)}</span>
                   </div>
                 ) : (
                   <div className="text-gray-500 font-semibold">Even</div>
@@ -90,7 +90,7 @@ export function BillSummary({ people, items }) {
                   {personItems.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <span className="text-gray-700">{item.name}</span>
-                      <span className="text-gray-600">${item.price.toFixed(2)}</span>
+                      <span className="text-gray-600">Rs {item.price.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -110,7 +110,7 @@ export function BillSummary({ people, items }) {
                 const creditors = summary.personSummary.filter(s => s.balance > 0.01);
                 return creditors.map((creditor) => (
                   <div key={`${debtor.person.id}-${creditor.person.id}`} className="mt-1">
-                    • {debtor.person.name} pays ${Math.min(Math.abs(debtor.balance), creditor.balance).toFixed(2)} to {creditor.person.name}
+                    • {debtor.person.name} pays Rs {Math.min(Math.abs(debtor.balance), creditor.balance).toFixed(2)} to {creditor.person.name}
                   </div>
                 ));
               })}
