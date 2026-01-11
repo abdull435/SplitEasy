@@ -146,6 +146,7 @@ export function BillSummary({ people, items }) {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{person.name}</h3>
+                  <div className="text-sm text-gray-500">Total: Rs {(totalSpent + totalOwes).toFixed(2)}</div>
                   <div className="text-sm text-gray-500">Spent: Rs {totalSpent.toFixed(2)}</div>
                   <div className="text-sm text-gray-500">Should pay: Rs {totalOwes.toFixed(2)}</div>
                 </div>
